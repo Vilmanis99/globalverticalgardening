@@ -150,8 +150,22 @@ export default async function PostPage({
           {post.title}
         </h1>
 
-        <div className="mt-5 flex items-center justify-center gap-2 text-sm text-fg-muted">
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-fg-muted">
           <time dateTime={isoDate(post.date)}>{formatDate(post.date)}</time>
+          {post.lastUpdated && isoDate(post.lastUpdated) !== isoDate(post.date) && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span className="inline-flex items-center gap-1">
+                <span className="text-fg-muted/70">Updated</span>
+                <time
+                  dateTime={isoDate(post.lastUpdated)}
+                  className="font-medium text-accent"
+                >
+                  {formatDate(post.lastUpdated)}
+                </time>
+              </span>
+            </>
+          )}
           <span aria-hidden="true">·</span>
           <span>{post.readingMinutes} min read</span>
           <span aria-hidden="true">·</span>
