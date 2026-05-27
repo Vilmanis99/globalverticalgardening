@@ -1,0 +1,36 @@
+# dependencies
+node_modules
+.pnp
+.pnp.*
+
+# next
+.next
+out
+build
+
+# misc
+.DS_Store
+*.pem
+.env*
+!.env.example
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# editor
+.vscode
+.idea
+
+# original WXR exports — kept locally but not in repo
+Squarespace-Wordpress-Export-*.xml
+content/_images.json
+content/_slug_renames.json
+
+# Vercel
+.vercel
