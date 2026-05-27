@@ -5,7 +5,11 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
-import { getAllPosts, getPost, getRelatedPosts } from "@/lib/posts";
+import {
+  getAllPostsIncludingDrafts,
+  getPost,
+  getRelatedPosts,
+} from "@/lib/posts";
 import { PostCard } from "@/components/post-card";
 import { categoryLabel, getCategory } from "@/lib/categories";
 import { formatDate, isoDate } from "@/lib/format";
@@ -19,7 +23,12 @@ import { HowToJsonLd } from "@/components/howto-jsonld";
 const SITE_URL = "https://globalverticalgardening.net";
 
 export function generateStaticParams() {
-  return getAllPosts().map((p) => ({ slug: p.category, post: p.slug }));
+  // Include drafts so the URLs build, but the page itself will emit noindex
+  // and show a banner so drafts aren't picked up by search.
+  return getAllPostsIncludingDrafts().map((p) => ({
+    slug: p.category,
+    post: p.slug,
+  }));
 }
 
 export async function generateMetadata({
@@ -38,6 +47,9 @@ export async function generateMetadata({
     title: post.title,
     description: post.excerpt,
     alternates: { canonical },
+    robots: post.draft
+      ? { index: false, follow: false, googleBot: { index: false, follow: false } }
+      : undefined,
     openGraph: {
       title: post.title,
       description: post.excerpt,
@@ -83,15 +95,28 @@ export default async function PostPage({
   return (
     <article>
       <ReadingProgress />
-      <ArticleJsonLd post={post} siteUrl={SITE_URL} />
-      {post.faq && <FaqJsonLd faq={post.faq} />}
-      {post.howto && (
+      {!post.draft && <ArticleJsonLd post={post} siteUrl={SITE_URL} />}
+      {!post.draft && post.faq && <FaqJsonLd faq={post.faq} />}
+      {!post.draft && post.howto && (
         <HowToJsonLd
           name={post.title}
           description={post.excerpt}
           steps={post.howto}
           imageUrl={post.heroImage ? `${SITE_URL}${post.heroImage}` : undefined}
         />
+      )}
+      {post.draft && (
+        <div className="bg-accent-soft border-b border-accent/30">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 py-3 text-sm flex items-center justify-between gap-3">
+            <span className="flex items-center gap-2">
+              <span className="inline-flex h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
+              <strong className="font-medium">Work in progress</strong>
+              <span className="text-fg-muted">
+                — this draft is hidden from search engines and not linked from the site index.
+              </span>
+            </span>
+          </div>
+        </div>
       )}
       <Breadcrumbs
         crumbs={[

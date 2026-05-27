@@ -34,6 +34,14 @@ export interface ContentMeta {
    * post on /field-tests.
    */
   fieldTest?: boolean;
+  /**
+   * True if this post is still being written / details pending. Drafts are
+   * excluded from public discovery (sitemap, homepage, category pages,
+   * /field-tests, RSS, /best) but remain accessible at their direct URL for
+   * preview. A "Work in progress" banner is shown on the page itself, plus
+   * `<meta name="robots" content="noindex">` so search engines don't index it.
+   */
+  draft?: boolean;
 }
 
 export interface Content extends ContentMeta {
@@ -76,6 +84,7 @@ function readDir(dir: string, kind: ContentKind): Content[] {
         faq: Array.isArray(data.faq) ? (data.faq as FaqItem[]) : undefined,
         howto: Array.isArray(data.howto) ? (data.howto as HowToStep[]) : undefined,
         fieldTest: data.fieldTest === true,
+        draft: data.draft === true,
         body: content,
       };
     });
@@ -84,11 +93,27 @@ function readDir(dir: string, kind: ContentKind): Content[] {
 let _posts: Content[] | null = null;
 let _pages: Content[] | null = null;
 
+/**
+ * Returns all posts, EXCLUDING drafts.
+ * Use this for listings (homepage, category pages, sitemap, RSS, /field-tests, etc.)
+ */
 export function getAllPosts(): Content[] {
-  if (_posts) return _posts;
+  if (_posts) {
+    return _posts.filter((p) => !p.draft);
+  }
   _posts = readDir(POSTS_DIR, "post").sort((a, b) =>
     b.date.localeCompare(a.date)
   );
+  return _posts.filter((p) => !p.draft);
+}
+
+/** Returns ALL posts including drafts — used only for the direct URL route. */
+export function getAllPostsIncludingDrafts(): Content[] {
+  if (!_posts) {
+    _posts = readDir(POSTS_DIR, "post").sort((a, b) =>
+      b.date.localeCompare(a.date)
+    );
+  }
   return _posts;
 }
 
@@ -100,8 +125,9 @@ export function getAllPages(): Content[] {
   return _pages;
 }
 
+/** Looks up a post by slug. Returns drafts too — the route shows them with a banner + noindex. */
 export function getPost(slug: string): Content | undefined {
-  return getAllPosts().find((p) => p.slug === slug);
+  return getAllPostsIncludingDrafts().find((p) => p.slug === slug);
 }
 
 export function getPage(slug: string): Content | undefined {
