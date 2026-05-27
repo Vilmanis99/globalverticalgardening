@@ -28,6 +28,12 @@ export interface ContentMeta {
   heroImage?: string;
   faq?: FaqItem[];
   howto?: HowToStep[];
+  /**
+   * True if this post is a "Field Test" — an article documenting a product
+   * Karlis bought + tested himself. Surfaces a FIELD TEST badge and lists the
+   * post on /field-tests.
+   */
+  fieldTest?: boolean;
 }
 
 export interface Content extends ContentMeta {
@@ -69,6 +75,7 @@ function readDir(dir: string, kind: ContentKind): Content[] {
         heroImage: hero,
         faq: Array.isArray(data.faq) ? (data.faq as FaqItem[]) : undefined,
         howto: Array.isArray(data.howto) ? (data.howto as HowToStep[]) : undefined,
+        fieldTest: data.fieldTest === true,
         body: content,
       };
     });
@@ -103,6 +110,10 @@ export function getPage(slug: string): Content | undefined {
 
 export function getPostsByCategory(category: string): Content[] {
   return getAllPosts().filter((p) => p.category === category);
+}
+
+export function getFieldTestPosts(): Content[] {
+  return getAllPosts().filter((p) => p.fieldTest === true);
 }
 
 export function getRelatedPosts(post: Content, limit = 3): Content[] {

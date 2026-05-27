@@ -57,6 +57,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link href="/field-tests" className="hover:text-primary transition-colors">
+                Field tests
+              </Link>
+            </li>
+            <li>
               <Link href="/about-me" className="hover:text-primary transition-colors">
                 About
               </Link>

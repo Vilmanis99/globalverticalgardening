@@ -2,6 +2,10 @@ import type { ComponentProps, ReactElement, ReactNode } from "react";
 import { isValidElement } from "react";
 import Image from "next/image";
 import dims from "@/lib/image-dimensions.json";
+import { YieldTable } from "@/components/yield-table";
+import { Timeline } from "@/components/timeline";
+import { FieldTestProduct } from "@/components/field-test-product";
+import { YouTubeEmbed } from "@/components/youtube-embed";
 
 const DIMENSIONS = dims as Record<string, { width: number; height: number }>;
 
@@ -12,6 +16,10 @@ function isLocalImage(src: unknown): src is string {
 }
 
 export const mdxComponents = {
+  YieldTable,
+  Timeline,
+  FieldTestProduct,
+  YouTubeEmbed,
   img: (props: ComponentProps<"img">) => {
     const src = props.src;
     const alt = props.alt ?? "";

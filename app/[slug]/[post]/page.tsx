@@ -101,12 +101,22 @@ export default async function PostPage({
       />
 
       <header className="mx-auto max-w-3xl px-4 sm:px-6 pt-6 md:pt-8 text-center">
-        <Link
-          href={`/${post.category}`}
-          className="inline-block text-[11px] font-medium uppercase tracking-[0.18em] text-accent hover:text-primary transition-colors"
-        >
-          {categoryLabel(post.category)}
-        </Link>
+        <div className="flex items-center justify-center gap-3">
+          {post.fieldTest && (
+            <Link
+              href="/field-tests"
+              className="inline-flex items-center text-[10px] font-medium uppercase tracking-[0.18em] px-2.5 py-1 rounded-full bg-primary text-primary-fg hover:opacity-90 transition-opacity"
+            >
+              Field test
+            </Link>
+          )}
+          <Link
+            href={`/${post.category}`}
+            className="inline-block text-[11px] font-medium uppercase tracking-[0.18em] text-accent hover:text-primary transition-colors"
+          >
+            {categoryLabel(post.category)}
+          </Link>
+        </div>
 
         <h1
           className="mt-4 text-3xl md:text-5xl tracking-tight leading-[1.1] text-fg"

@@ -50,6 +50,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   });
 
   entries.push({
+    url: `${SITE_URL}/field-tests`,
+    lastModified: today,
+    changeFrequency: "weekly",
+    priority: 0.9,
+  });
+
+  entries.push({
     url: `${SITE_URL}/authors/karlis`,
     lastModified: today,
     changeFrequency: "monthly",
