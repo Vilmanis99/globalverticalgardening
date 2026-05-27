@@ -47,6 +47,11 @@ export function SiteFooter() {
           </h2>
           <ul className="mt-4 space-y-2 text-sm">
             <li>
+              <Link href="/best" className="hover:text-primary transition-colors">
+                Start here
+              </Link>
+            </li>
+            <li>
               <Link href="/journal" className="hover:text-primary transition-colors">
                 Journal
               </Link>

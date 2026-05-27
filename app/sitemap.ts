@@ -42,6 +42,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   });
 
+  entries.push({
+    url: `${SITE_URL}/best`,
+    lastModified: today,
+    changeFrequency: "monthly",
+    priority: 0.9,
+  });
+
+  entries.push({
+    url: `${SITE_URL}/authors/karlis`,
+    lastModified: today,
+    changeFrequency: "monthly",
+    priority: 0.5,
+  });
+
   for (const j of getAllJournalEntries()) {
     entries.push({
       url: `${SITE_URL}/journal/${j.slug}`,
