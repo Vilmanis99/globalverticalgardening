@@ -1,39 +1,31 @@
 import type { ReactNode } from "react";
+import { TIMELINE_DATA } from "@/lib/data/timeline-data";
 
 export interface TimelineEntry {
-  /** "Day 0", "Day 3", "Week 1", etc. */
   label: string;
-  /** Short heading for the entry */
   title: string;
-  /** Body — can be plain text or include simple inline elements */
   body: ReactNode;
-  /** Optional photo for this day */
   photo?: string;
-  /** Optional alt text for the photo */
   photoAlt?: string;
 }
 
 interface TimelineProps {
-  entries: TimelineEntry[];
-  /** Optional caption above the timeline */
+  /** Lookup key into lib/data/timeline-data.ts. Preferred — MDX-safe. */
+  dataKey?: string;
+  /** Inline alternative — used from regular TSX, not from MDX. */
+  entries?: TimelineEntry[];
   caption?: string;
 }
 
-/**
- * Used for day-by-day grow logs in microgreens articles.
- * Each entry is a vertical row with a label rail on the left.
- *
- * Usage in MDX:
- *
- *   <Timeline
- *     entries={[
- *       { label: "Day 0", title: "Sow", body: "Pre-soaked 12g of seeds overnight..." },
- *       { label: "Day 3", title: "Germination", body: "First white roots appearing.", photo: "/garden/.../day-3.jpg" },
- *     ]}
- *   />
- */
-export function Timeline({ entries, caption }: TimelineProps) {
-  const safeEntries = Array.isArray(entries) ? entries : [];
+export function Timeline({ dataKey, entries, caption }: TimelineProps) {
+  let resolvedEntries: TimelineEntry[] | undefined = entries;
+  let resolvedCaption: string | undefined = caption;
+  if (dataKey && TIMELINE_DATA[dataKey]) {
+    const data = TIMELINE_DATA[dataKey];
+    resolvedEntries = data.entries;
+    resolvedCaption = caption ?? data.caption;
+  }
+  const safeEntries = Array.isArray(resolvedEntries) ? resolvedEntries : [];
   if (safeEntries.length === 0) {
     return (
       <figure className="not-prose my-10 rounded-card border border-border bg-surface p-6 text-fg-muted text-sm">
@@ -43,9 +35,9 @@ export function Timeline({ entries, caption }: TimelineProps) {
   }
   return (
     <figure className="not-prose my-10">
-      {caption && (
+      {resolvedCaption && (
         <figcaption className="mb-4 text-xs uppercase tracking-[0.14em] text-fg-muted">
-          {caption}
+          {resolvedCaption}
         </figcaption>
       )}
       <ol className="relative border-l-2 border-border ml-3 pl-6 space-y-7">

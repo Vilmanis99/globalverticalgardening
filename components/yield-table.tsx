@@ -1,42 +1,35 @@
+import { YIELD_DATA } from "@/lib/data/yield-data";
+
 interface YieldRow {
   variety: string;
   daysToHarvest?: number | string;
-  /** Wet weight at harvest, grams */
   wetGrams?: number | string;
-  /** Seed weight used, grams */
   seedGrams?: number | string;
-  /** Notes from Karlis' grow log */
   notes?: string;
-  /** When data is missing, render the row as a placeholder */
   pending?: boolean;
 }
 
 interface YieldTableProps {
-  rows: YieldRow[];
-  /** Optional caption — e.g. tray size / soil / light conditions */
+  /** Lookup key into lib/data/yield-data.ts. Preferred — MDX-safe. */
+  dataKey?: string;
+  /** Inline alternative — used when called from regular TSX, not from MDX. */
+  rows?: YieldRow[];
   caption?: string;
 }
 
-/**
- * Used to display first-party microgreen yield data (per-tray gram weights).
- * Rows with `pending: true` render greyed out to flag missing data.
- *
- * Usage in MDX:
- *
- *   <YieldTable
- *     caption="1020 trays, 4 inches deep, 200 PPFD LED, 18°C ambient"
- *     rows={[
- *       { variety: "Broccoli", daysToHarvest: 10, wetGrams: 195, seedGrams: 12 },
- *       { variety: "Pea shoots", daysToHarvest: 12, wetGrams: 320, seedGrams: 95 },
- *     ]}
- *   />
- */
-export function YieldTable({ rows, caption }: YieldTableProps) {
-  const safeRows = Array.isArray(rows) ? rows : [];
+export function YieldTable({ dataKey, rows, caption }: YieldTableProps) {
+  let resolvedRows: YieldRow[] | undefined = rows;
+  let resolvedCaption: string | undefined = caption;
+  if (dataKey && YIELD_DATA[dataKey]) {
+    const data = YIELD_DATA[dataKey];
+    resolvedRows = data.rows;
+    resolvedCaption = caption ?? data.caption;
+  }
+  const safeRows = Array.isArray(resolvedRows) ? resolvedRows : [];
   if (safeRows.length === 0) {
     return (
       <figure className="not-prose my-10 rounded-card border border-border bg-surface p-6 text-fg-muted text-sm">
-        Data pending — Karlis hasn&apos;t added the measured rows yet.
+        Data pending — measurements haven&apos;t landed yet.
       </figure>
     );
   }
@@ -104,9 +97,9 @@ export function YieldTable({ rows, caption }: YieldTableProps) {
           </tbody>
         </table>
       </div>
-      {caption && (
+      {resolvedCaption && (
         <figcaption className="px-4 py-3 text-xs text-fg-muted border-t border-border bg-bg/30">
-          {caption}
+          {resolvedCaption}
         </figcaption>
       )}
     </figure>
