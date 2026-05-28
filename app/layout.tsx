@@ -54,6 +54,13 @@ export default function RootLayout({
         fontFamily: "var(--font-inter), ui-sans-serif, system-ui, sans-serif",
       }}
     >
+      <head>
+        <script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="73JoKjh8m0w/oquuoH14Cg"
+          async
+        />
+      </head>
       <body className="min-h-dvh flex flex-col antialiased">
         <SiteJsonLd />
         <SiteHeader />
